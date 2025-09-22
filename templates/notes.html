@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Welcome, {{ username }}!</h2>
+<a href="{{ url_for('logout') }}">Logout</a>
+
+<h3>Add Note</h3>
+<form method="POST">
+  <input type="text" name="title" placeholder="Title" required><br>
+  <textarea name="content" placeholder="Write your note..." required></textarea><br>
+  <button type="submit">Add Note</button>
+</form>
+
+<h3>Your Notes</h3>
+<ul>
+  {% for note in notes %}
+    <li><strong>{{ note['title'] }}</strong>: {{ note['content'] }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}
