@@ -1,11 +1,15 @@
 from flask import Flask, render_template, request, redirect, session, url_for
 from pymongo import MongoClient
 import bcrypt
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "sovneotyhcdobneiwtfhrsdf"
+app.secret_key = os.getenv("SECRET_KEY")
 
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient(os.getenv("MONGO_URL"))
+
 db = client["notes_app"]
 users = db["users"]
 notes = db["notes"]
@@ -23,7 +27,7 @@ def register():
         password = request.form["password"]
 
         if users.find_one({"username": username}):
-            return "❌ Username already exists."
+            return "Username already exists."
 
         hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
         users.insert_one({"username": username, "password": hashed})
@@ -42,7 +46,7 @@ def login():
             session["user_id"] = str(user["_id"])
             session["username"] = user["username"]
             return redirect(url_for("notes_page"))
-        return "❌ Invalid credentials."
+        return "Invalid credentials."
 
     return render_template("login.html")
 
